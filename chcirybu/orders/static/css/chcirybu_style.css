@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css?family=Inter&display=swap');
+
+html {
+    height: 100%;
+}
+body {
+    font-family: Inter;
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background: linear-gradient(to left, #5272ad, #4a61af);
+    font-size: 1.2em
+}
+
+
+input, select {
+    font-size: 0.85em;
+}
+
+li {
+    display: inline;
+}
+
+#submit-button {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#empty-order-fish-form  ul {
+    display: none;
+}
+
+
+#content {
+    width: 1150px;
+    background: white;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 40px;
+    padding-bottom: 15px;
+    border-radius: 25px;
+}
+
+
+
+#contact-form ul {
+    display: table-row;
+}
+
+#contact-form li {
+    display: table-cell;
+    padding: 5px;
+}
+
+#contact-form label, #contact-form input {
+    display: block
+}
+
+
+header {
+    padding-top: 0;
+    margin-top: 0;
+    text-align: center;
+}
+
+#order-fish-form input[type=number] {
+    width: 100px;
+}
+
+#order-fish-form ul {
+    display: table-row;
+}
+
+#order-fish-form li {
+    padding: 5px;
+    display: table-cell;
+}
+
+.help_text {
+    margin: 0;
+    padding: 0;
+    font-style: italic;
+}
+
+.required {
+    color: red;
+}
+
+#recap table {
+    margin-top: 30px;
+    border-collapse: collapse;
+}
+
+#recap th {
+    text-align: left;
+    padding: 4px;
+    border-bottom: 1px solid gray;
+}
+
+#recap td {
+    padding: 4px;
+    border-bottom: 1px solid gray;
+}
+
+#price {
+    border-collapse: collapse;
+}
+
+#price thead th {
+    background: #cdf6ff;
+    border: 1px solid #b7b7b7;
+    padding: 4px;
+}
+
+#price tbody th {
+    text-align: left;
+    border: 1px solid #b7b7b7;
+    padding: 4px;
+}
+
+#price tbody td {
+    border: 1px solid #b7b7b7;
+    padding: 4px;
+}
+
+button, input[type=submit] {
+    transition-duration: 0.4s;    
+    font-size: 1em;
+    border-radius: 5px;
+}
+
+input[type=submit] {
+    padding: 20px;
+}
+
+button:hover, input[type=submit]:hover {
+  background-color: #4a62af;
+  color: white;
+}
+
+footer {
+    margin-top: 60px;
+    text-align: center;
+}

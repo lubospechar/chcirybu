@@ -1,0 +1,60 @@
+{% extends "orders/base.html" %}
+    
+
+{% block main %}
+
+
+
+<h2>Vaše předobjednáka byla uložena</h2>
+
+<div id="recap">
+
+<p>Zde je rekapitulace. {% if order.email %}Kopie Vám byla zaslána emailem.{% endif %}</p>
+
+<table>
+    <tr>
+        <th>objednávka číslo:</th>
+        <td>{{ order.pk }}</td> 
+    </tr>
+    
+    <tr>
+        <th>jméno a příjmení:</th>
+        <td>{{ order.first_name }} {{ order.surname }}</td>
+    </tr>
+    
+    {% if order.email %}
+        <tr>
+            <th>email:</th>
+            <td>{{ order.email }}</td>
+        </tr>
+    {% endif %}
+    
+    <tr>
+        <th>telefon:</th>
+        <td>{{ order.phonenumber }}</td>
+    </tr>
+    
+    <tr>
+        <th>vyzvednutí:</th>
+        <td>{{ order.delivery.delivery }}, {{ order.delivery.day }}, {{ order.delivery.part }}</td>
+        </tr>
+    
+    <tr>
+        <th>balíček:</th>
+        <td>
+            {% if order.package %}balíček Vám připravíme na stánku. Až bude připravený, zašleme Vám SMS.
+            {% else %}Rybu budete mít připravenou živou na stánku, na počkání Vám ji zpracujeme.
+            {% endif %}
+        </td>
+    </tr>
+</table>
+
+
+<p>Děkujeme a budeme se na Vás těšit.</p>
+
+<p>Pokud si chcete předobjednat další ryby, <a href="{% url 'home' %}">pokračujte zde</a>.</p>
+
+<p>V případě jakýchkoliv dotazů nás kontaktujte přes email: <a href="mailto:ja@chcirybu.cz?subject=objednávka {{ order.pk }}, {{ order.first_name }} {{ order.surname }}">ja@chcirybu.cz</a> nebo telefonicky +420 725 606 312</p>
+
+</div>
+{% endblock %}

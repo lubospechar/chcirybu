@@ -1,0 +1,30 @@
+{% load static %}<!DOCTYPE html>
+<html lang="cs" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>ChciRybu.cz</title>
+        <script src="{% static 'js/jquery-3.6.0.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'css/chcirybu_style.css' %}">
+    </head>
+    
+    <body>
+        <div id="content">
+            <header>
+                <h1>Vánoční prodej ryb v Lišově</h1>
+                {% block header %}{% endblock %}
+            </header>
+            <main>
+                {% block main %}{% endblock %}
+            </main>
+            <footer>
+                <p>Chcirybu.cz - Vánoční prodej ryb v Lišově, Ing. Marek Baxa Ph.D., IČO: 88524256, tel: +420 776 616 104</p>
+                <p>Email: <a href="mailto:ja@chcirybu.cz">ja@chcirybu.cz</a>
+
+                {% block footer %}{% endblock %}
+            </footer>
+        </div>
+        <script>
+            {% block script %}{% endblock %}
+        </script>
+    </body>
+</html>
