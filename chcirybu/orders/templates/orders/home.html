@@ -114,7 +114,13 @@
     <div id="add-button"><button type="button">přidat ryby</button></div>
     
     
-    <div id="submit-button"><input type="submit" value="vytvořit předobjednávku" />
+
+
+    <div id="submit-button"><p>
+                  <label for="{{ form.voucher.id_for_label }}">Mám slevový kód:</label>
+                {{ form.voucher }}</p>
+<p>
+    <input type="submit" value="vytvořit předobjednávku" /></p>
         <p>Po dokončení předobjednávky Vám příjde potvrzující email.</p>
     </div>
 

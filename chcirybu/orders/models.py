@@ -1,9 +1,6 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
-from twilio.rest import Client
-from chcirybu.settings import (
-    TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_NUMBER
-)
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from orders.email import email_payment
 
@@ -50,13 +47,8 @@ class Fish(models.Model):
         verbose_name="Popis",
     )
 
-    price_alive = models.PositiveSmallIntegerField(
-        verbose_name="Cena živá váha (pouze na stánku)",
-        default=0
-    )
-
     price = models.PositiveSmallIntegerField(
-        verbose_name="Cena kuchaná ryba",
+        verbose_name="Cena živá váha",
         default=0
     )
 
@@ -136,15 +128,13 @@ class Order(models.Model):
 
     status = models.PositiveSmallIntegerField(
         choices=(
-            (0, "formulář vyplněn"),
             (1, "objednáno"),
             (2, "připraveno"),
             (3, "odeslána informační SMS"),
             (4, "vyřízeno"),
             (5, "odeslané platební údaje na email"),
-            (99, "zrušeno"),
         ),
-        default=0
+        default=1
     )
 
     note = models.CharField(
@@ -161,7 +151,7 @@ class Order(models.Model):
     )
 
     alive_fish = models.BooleanField(
-        verbose_name="Platba za živou váhu",
+        verbose_name="Chci živou rybu a vyzvednu si jí v Lišově na stánku",
         default = False
     )
 
@@ -170,6 +160,8 @@ class Order(models.Model):
         help_text="Chci připravit balíček a dostat SMS, že je na stánku vše připraveno.",
         default=False
     )
+
+    voucher = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         verbose_name='Objednávka'
@@ -194,29 +186,6 @@ class Order(models.Model):
         return f'{price} kč'
 
     complete_price.short_description="celková cena"
-
-    def save(self, *args, **kwargs):
-        if self.status == 3:
-            client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-            message = client.messages.create(
-                body='Vase ryba je pripravena na stanku v Lisove',
-                from_="CHCIRYBU",
-                to=self.phonenumber.as_e164
-            )
-
-            print(message)
-
-        if self.status == 5:
-            email_payment(self)
-            price = self.complete_price()
-            client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-            message = client.messages.create(
-                body=f'Dekujeme za objednavku na chcirybu.cz. Prosime o uhrazeni castky {price}, Cislo uctu: 247633301/0600, VS: {self.pk}',
-                from_="CHCIRYBU",
-                to=self.phonenumber.as_e164
-            )
-
-        super(Order, self).save(*args, **kwargs)
 
 
 class Finish(models.Model):
@@ -284,10 +253,7 @@ class OrderFish(models.Model):
         if self.weight == None:
             return 0
 
-        if self.order.package:
-            price = round((self.weight * self.fish.price) + (self.amount * self.finish.price)) # cena mrtvou
-        else:
-            price = round((self.weight * self.fish.price_alive) + (self.amount * self.finish.price)) # cena za zivou
+        price = round((self.weight * self.fish.price) + (self.amount * self.finish.price))
 
         return price
 
@@ -299,6 +265,13 @@ class OrderFish(models.Model):
 
 
 
-
+class Voucher(models.Model):
+    voucher_code = models.CharField(max_length=255, verbose_name='Slevový kód')
+    discount = models.PositiveSmallIntegerField(validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100)
+        ],
+        help_text="Hodnota musí být mezi 0 a 100."
+    )
 
 

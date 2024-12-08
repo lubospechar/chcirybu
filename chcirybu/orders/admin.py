@@ -1,6 +1,6 @@
 from django.contrib import admin
 from orders.models import (
-    Delivery, Order, Fish,  OrderFish, Finish
+    Delivery, Order, Fish,  OrderFish, Finish, Voucher
 )
 
 @admin.register(Delivery)
@@ -10,8 +10,8 @@ class DelivaryAdmin(admin.ModelAdmin):
 
 @admin.register(Fish)
 class FishAdmin(admin.ModelAdmin):
-    list_display = ('fish', 'desc', 'price_alive', 'price', 'store', 'cons')
-    list_editable = ('price_alive', 'price')
+    list_display = ('fish', 'desc', 'price', 'store', 'cons')
+    list_editable = ('price', )
 
 class OrderFishInline(admin.TabularInline):
     model = OrderFish
@@ -46,3 +46,11 @@ class OrderFishAdmin(admin.ModelAdmin):
 class FinishAdin(admin.ModelAdmin):
     list_display = ('procedure', 'price')
     list_editable = ('price',)
+
+@admin.register(Voucher)
+class VoucherAdmin(admin.ModelAdmin):
+    list_display = ('voucher_code', 'discount')  # Zobrazené sloupce v přehledu
+    search_fields = ('voucher_code',)  # Možnost vyhledávat podle slevového kódu
+    list_filter = ('discount',)  # Možnost filtrovat podle hodnoty slevy
+    ordering = ('voucher_code',)  # Řazení podle slevového kódu
+    fields = ('voucher_code', 'discount')  # Pole zobrazená ve formuláři
