@@ -6,6 +6,67 @@ from orders.sms_sender import SMSSender
 
 from orders.email import email_payment
 
+
+class DiscountPeriod(models.Model):
+    name = models.CharField(max_length=100, help_text="Název slevy, např. 'Letní akce'")
+    description = models.TextField(blank=True, help_text="Popis slevy nebo podmínky")
+    discount_percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        help_text="Procento slevy, např. 10.50 pro 10.5% slevu"
+    )
+    start_date = models.DateTimeField(help_text="Datum a čas začátku slevy")
+    end_date = models.DateTimeField(help_text="Datum a čas konce slevy")
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Indikuje, zda je sleva aktivní"
+    )
+
+    class Meta:
+        verbose_name = "Sleva"
+        verbose_name_plural = "Slevy"
+        ordering = ['start_date']
+
+    def __str__(self):
+        return f"{self.name} ({self.start_date} - {self.end_date})"
+
+    def is_current(self):
+        """Vrací True, pokud je sleva právě teď platná."""
+        return self.is_active and self.start_date <= now() <= self.end_date
+
+    def clean(self):
+        """Validace, aby se data nepřekrývala."""
+        super().clean()
+        overlapping_discounts = DiscountPeriod.objects.filter(
+            is_active=True,
+            start_date__lt=self.end_date,
+            end_date__gt=self.start_date
+        ).exclude(pk=self.pk)
+
+        if overlapping_discounts.exists():
+            raise ValidationError("Časový interval této slevy se překrývá s jinou aktivní slevou.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_current_discount(cls):
+        """
+        Vrací aktuální platnou slevu nebo None, pokud žádná taková sleva neexistuje.
+        """
+        current_discount = cls.objects.filter(
+            is_active=True,
+            start_date__lte=now(),
+            end_date__gte=now()
+        ).first()  # Vrací první nalezenou aktuální slevu nebo None
+        return current_discount
+
+    class Meta:
+        verbose_name = "Sleva"  # Jednotné číslo
+        verbose_name_plural = "Slevy"  # Množné číslo
+        ordering = ['start_date']
+
 class Delivery(models.Model):
     day = models.DateField(
         verbose_name="Den vyzvednutí",
@@ -189,6 +250,7 @@ class Order(models.Model):
 
 
     def send_sms_info(self):
+        print('aa')
         new_sms = SMSSender(
             login=settings.SMS_SENDER_LOGIN,
             secret_key=settings.SMS_SENDER_SECRET
