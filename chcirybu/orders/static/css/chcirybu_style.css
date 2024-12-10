@@ -1,15 +1,11 @@
-@import url('https://fonts.googleapis.com/css?family=Inter&display=swap');
-
 html {
     height: 100%;
 }
 body {
-    font-family: Inter;
+    font-family: 'Poppins', sans-serif;
     height: 100%;
     margin: 0;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background: linear-gradient(to left, #5272ad, #4a61af);
+    background-color: #121b20;
     font-size: 1.2em
 }
 
@@ -43,6 +39,10 @@ li {
     padding-top: 40px;
     padding-bottom: 15px;
     border-radius: 25px;
+    background-image: url('/static/pozadi.jpg'); /* URL odpovídá STATIC_URL */
+    background-size: cover; /* Obrázek pokryje celé pozadí */
+    background-repeat: no-repeat; /* Zabrání opakování obrázku */
+    background-position: center; /* Centruje obrázek */
 }
 
 

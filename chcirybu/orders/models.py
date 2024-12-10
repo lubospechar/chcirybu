@@ -5,7 +5,7 @@ from django.conf import settings
 from orders.sms_sender import SMSSender
 
 from orders.email import email_payment
-
+from django.utils.timezone import now
 
 class DiscountPeriod(models.Model):
     name = models.CharField(max_length=100, help_text="Název slevy, např. 'Letní akce'")
@@ -228,6 +228,13 @@ class Order(models.Model):
 
     voucher = models.CharField(max_length=255, null=True, blank=True)
 
+    discount_percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        help_text="Procento slevy, např. 10.50 pro 10.5% slevu",
+        default=0
+    )
+
     class Meta:
         verbose_name='Objednávka'
         verbose_name_plural='Objednávky'
@@ -250,7 +257,6 @@ class Order(models.Model):
 
 
     def send_sms_info(self):
-        print('aa')
         new_sms = SMSSender(
             login=settings.SMS_SENDER_LOGIN,
             secret_key=settings.SMS_SENDER_SECRET

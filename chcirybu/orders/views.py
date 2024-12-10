@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.db.models import Sum
-from orders.models import Fish, Order, Delivery, OrderFish
+from orders.models import Fish, Order, Delivery, OrderFish, DiscountPeriod
 from orders.forms import OrderForm, OrderFishForm
 from orders.email import email_recap
 from django.forms import formset_factory
 from django.http import HttpResponse, Http404
 import datetime
+from django.conf import settings
+from orders.sms_sender import SMSSender
 
 
 class Home(View):
@@ -61,6 +63,13 @@ class Home(View):
 
             order.save()
 
+
+            discount = DiscountPeriod.get_current_discount()
+
+            if discount:
+                order.discount_percentage = discount.discount_percentage
+
+
             for f in formset:
                 if f.cleaned_data: # tohle chytá prázdnou řádku z formfactory, jen nevím zda je to úplne OK řešení
                     fish = f.save(commit=False)
@@ -87,16 +96,22 @@ class Finish(View):
         if order.status == 1:
             raise Http404 # platnost stránky vypršela
 
-        for f in order.order_fish.all():
-            fish = f.fish
-            fish.store = fish.store - f.amount
-            fish.save()
+        print('mail')
+        if order.email:
+            email_recap(order)
+
+        print('sms')
+        if order.phonenumber:
+            new_sms = SMSSender(
+                login=settings.SMS_SENDER_LOGIN,
+                secret_key=settings.SMS_SENDER_SECRET
+            )
+
+            new_sms.send_sms(order.phonenumber.as_e164, "CHCIRYBU.CZ: Vase predobjednavka byla prijata.")
 
         order.status = 1
         order.save()
 
-        if order.email:
-            email_recap(order)
 
         return render(request, 'orders/finish.html', {'order': order})
 

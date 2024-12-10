@@ -1,11 +1,40 @@
 from django.contrib import admin
 from orders.models import (
-    Delivery, Order, Fish,  OrderFish, Finish, Voucher
+    Delivery, Order, Fish,  OrderFish, Finish, Voucher, DiscountPeriod
 )
 from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 
 from django.shortcuts import redirect
+
+
+@admin.register(DiscountPeriod)
+class DiscountPeriodAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'discount_percentage',
+        'start_date',
+        'end_date',
+        'is_active',
+        'is_current_discount',
+    )
+    list_filter = ('is_active', 'start_date', 'end_date')
+    search_fields = ('name', 'description')
+    ordering = ['start_date']
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'description')
+        }),
+        ('Nastavení slevy', {
+            'fields': ('discount_percentage', 'start_date', 'end_date', 'is_active')
+        }),
+    )
+
+    def is_current_discount(self, obj):
+        """Zobrazí True/False, pokud je sleva právě aktivní."""
+        return obj.is_current()
+    is_current_discount.short_description = "Aktuální sleva"
+    is_current_discount.boolean = True  # V administraci zobrazí ikonu místo textu
 
 @admin.register(Delivery)
 class DelivaryAdmin(admin.ModelAdmin):

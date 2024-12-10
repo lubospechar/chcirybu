@@ -64,37 +64,4 @@ class SMSSender:
         return response
 
 
-#
-#
-# def send_demo_sms():
-#     """
-#     Ukázková funkce pro odeslání SMS pomocí třídy SMSSender.
-#     """
-#     # Přihlašovací údaje (nahraďte skutečnými hodnotami)
-#     login = "lubospechar"  # Nahraďte přihlašovacím jménem
-#     secret_key = ""  # Nahraďte tajným klíčem
-#
-#     # Telefonní číslo příjemce a zpráva
-#     to_number = "+420123456789"  # Nahraďte cílovým telefonním číslem
-#     message = "Toto je ukázková SMS zpráva."
-#
-#     # Vytvoření instance třídy SMSSender
-#     sms_sender = SMSSender(login, secret_key)
-#
-#     # Odeslání SMS zprávy
-#     try:
-#         response = sms_sender.send_sms(to_number, message)
-#
-#         # Zpracování odpovědi API
-#         if response.status_code == 200:
-#             print("SMS byla úspěšně odeslána!")
-#             print("Odpověď API:", response.text)
-#         else:
-#             print("Při odesílání SMS nastala chyba.")
-#             print("Status kód:", response.status_code)
-#             print("Odpověď API:", response.text)
-#     except Exception as e:
-#         print("Nastala výjimka při odesílání SMS:", str(e))
-#
-# # Zavolání funkce pro ukázku
-# send_demo_sms()
+
