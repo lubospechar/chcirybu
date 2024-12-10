@@ -58,6 +58,7 @@ class Home(View):
                 order.alive_fish == False
             else:
                 order.alive_fish = True
+
             order.save()
 
             for f in formset:
@@ -65,6 +66,9 @@ class Home(View):
                     fish = f.save(commit=False)
                     fish.order = order
                     fish.save()
+
+            order.status = 0
+            order.save()
 
             return redirect('finish', order_pk=order.pk)
 

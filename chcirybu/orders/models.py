@@ -1,6 +1,8 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.conf import settings
+from orders.sms_sender import SMSSender
 
 from orders.email import email_payment
 
@@ -108,7 +110,8 @@ class Order(models.Model):
     )
 
     phonenumber = PhoneNumberField(
-        verbose_name="Telefon"
+        verbose_name="Telefon",
+        region="CZ"
     )
 
     commercial = models.BooleanField(
@@ -128,11 +131,12 @@ class Order(models.Model):
 
     status = models.PositiveSmallIntegerField(
         choices=(
+            (0, "formuář vyplněn"),
             (1, "objednáno"),
             (2, "připraveno"),
             (3, "odeslána informační SMS"),
-            (4, "vyřízeno"),
-            (5, "odeslané platební údaje na email"),
+            (4, "odeslané platební údaje na email a SMS"),
+            (5, "vyřízeno"),
         ),
         default=1
     )
@@ -179,13 +183,22 @@ class Order(models.Model):
         for p in self.order_fish.all():
             price = price + p.item_price()
 
-
-
-
-
         return f'{price} kč'
 
     complete_price.short_description="celková cena"
+
+
+    def send_sms_info(self):
+        new_sms = SMSSender(
+            login=settings.SMS_SENDER_LOGIN,
+            secret_key=settings.SMS_SENDER_SECRET
+        )
+
+        new_sms.send_sms(self.phonenumber.as_e164, "CHCIRYBU.CZ: Vase ryba je pripravena na stanku.")
+
+        self.status = 3
+        self.save()
+
 
 
 class Finish(models.Model):

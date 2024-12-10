@@ -1,133 +1,130 @@
 {% extends "orders/base.html" %}
 
 {% block header %}
-    <p>Vítáme Vás po roce. Udělejte si předobjednávku vánoční ryby na stánku v Lišově nebo s rozvozem do Karlových Varů a Prahy<p>
+    <p>Vítáme Vás po roce. Udělejte si předobjednávku vánoční ryby na stánku v Lišově nebo s rozvozem do Karlových Varů a Prahy</p>
 
-    <p>Stánek v Lišově na křižovatce ulic 5. května a Žizkova <a href="https://mapy.cz/s/cafarutuno">mapa</a>.</p>
+    <p>Stánek v Lišově na křižovatce ulic 5. května a Žižkova <a href="https://mapy.cz/s/cafarutuno">mapa</a>.</p>
 {% endblock %}
-    
 
 {% block main %}
-
 <div id="order-form" class="form-style-1">
-    <form method="post" action="{% url 'home' %}" novalidate>{% csrf_token %}
+    <form method="post" action="{% url 'home' %}" novalidate>
+        {% csrf_token %}
 
-    <h2>cena</h2>
-    <table id="price"><thead>
-        <tr>
-            <th>Druh</th>
-            <th>Popis</th>
-            <th>Cena živá váha</th>
-            <th>Cena balíček*</th>
-            <th>Kusů k dispozici</th>
-        </tr></thead><tbody>
-        {% for f in fish %}
-            <tr>
-                <th>{{ f.fish }}</th>
-                <td>{{ f.desc }}</td>
-                <td>{{ f.price_alive }} kč/kg</td>
-                <td>{{ f.price }} kč/kg</td>
-                <td>{{ f.store_info }}</td>
-            </tr>
-        {% endfor %}</tbody>
-    </table>
-    <p class="help_text">*Cena za balíček je navýšena o 10%, to se přibližně rovná množství tekutin, které ryba ztratí při kuchání.<br />Balíček je pak připraven včetně vnitřností (bez žluči).
-    
-    <h2>kontaktní údaje</h2>
-    <div id="contact-form">
-        {{ form.non_field_errors }}
-        <ul>
-            <li>
-                {{ form.first_name.errors }}
-                <label for="{{ form.first_name.id_for_label }}">Jméno<span class="required">*</span></label>
-                {{ form.first_name }}
-            </li>
-            <li>
-                {{ form.surname.errors }}
-                <label for="{{ form.surname.id_for_label }}">Příjmení<span class="required">*</span></label>
-                {{ form.surname }}
-            </li>  
-        </ul>
+        <h2>Cena</h2>
+        <table id="price">
+            <thead>
+                <tr>
+                    <th>Druh</th>
+                    <th>Popis</th>
+                    <th>Cena živá váha</th>
+                    <th>Cena balíček*</th>
+                    <th>Kusů k dispozici</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in fish %}
+                <tr>
+                    <th>{{ f.fish }}</th>
+                    <td>{{ f.desc }}</td>
+                    <td>{{ f.price_alive }} kč/kg</td>
+                    <td>{{ f.price }} kč/kg</td>
+                    <td>{{ f.store_info }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-        <ul>
-            <li>
-                {{ form.phonenumber.errors }}
-                <label for="{{ form.phonenumber.id_for_label }}">Telefon<span class="required">*</span></label>
-                {{ form.phonenumber }}
-            </li>
-            <li>
-                {{ form.email.errors }}
-                <label for="{{ form.email.id_for_label }}">Email<span class="required">*</span></label>
-                {{ form.email }}
-            </li>  
-        </ul>
+        <h2>Kontaktní údaje</h2>
+        <div id="contact-form">
+            {{ form.non_field_errors }}
+            <ul>
+                <li>
+                    {{ form.first_name.errors }}
+                    <label for="{{ form.first_name.id_for_label }}">Jméno<span class="required">*</span></label>
+                    {{ form.first_name }}
+                </li>
+                <li>
+                    {{ form.surname.errors }}
+                    <label for="{{ form.surname.id_for_label }}">Příjmení<span class="required">*</span></label>
+                    {{ form.surname }}
+                </li>
+            </ul>
 
-        
+            <ul>
+                <li>
+                    {{ form.phonenumber.errors }}
+                    <label for="{{ form.phonenumber.id_for_label }}">Telefon<span class="required">*</span></label>
+                    {{ form.phonenumber }}
+                </li>
+                <li>
+                    {{ form.email.errors }}
+                    <label for="{{ form.email.id_for_label }}">Email<span class="required">*</span></label>
+                    {{ form.email }}
+                </li>
+            </ul>
 
-        <ul>
-            <li>
-                {{ form.delivery.errors }}
-                <label for="{{ form.delivery.id_for_label }}">Místo a čas výdeje<span class="required">*</span></label>
-                {{ form.delivery }}
-            </li>
-            <li>
-                {{ form.adress.errors }}
-                <label for="{{ form.adress.id_for_label }}">Adresa</label>
-                {{ form.adress }}
-                <p class="help_text">Pouze pro rozvoz.</p>
-            </li>  
-        </ul>
-    
+            <ul>
+                <li>
+                    {{ form.delivery.errors }}
+                    <label for="{{ form.delivery.id_for_label }}">Místo a čas výdeje<span class="required">*</span></label>
+                    {{ form.delivery }}
+                </li>
+                <li>
+                    {{ form.adress.errors }}
+                    <label for="{{ form.adress.id_for_label }}">Adresa</label>
+                    {{ form.adress }}
+                    <p class="help_text">Pouze pro rozvoz.</p>
+                </li>
+            </ul>
+        </div>
 
-    </div>
-    <div id="other-options">
-        <p>{{ form.package }} Chci připravit balíček se zpracovanou rybou a dostat SMS, že je vše připraveno.</p>
+        <div id="other-options">
+            <p>{{ form.package }} Chci připravit balíček se zpracovanou rybou a dostat SMS, že je vše připraveno.</p>
+            <p>{{ form.commercial }} Chci odebírat newsletter Chcirybu.cz (email max 3x za rok).</p>
+        </div>
 
-        <p>{{ form.commercial }} Chci odebírat newsletter Chcirybu.cz (email max 3x za rok).
-    </div>
+        <h2>Ryby</h2>
+        <div id="form-management">{{ formset.management_form }}</div>
 
-    
-    
-    <h2>ryby</h2>
-    
-    <div id="form-management">{{formset.management_form }}</div>
-
-    <div id="order-fish-form">
-        <ul>
-            <li>Druh ryby<span class="required">*</span></li>
-            <li>Počet kusů<span class="required">*</span></li>
-            <li>Živá nebo zpracovaná ryba<span class="required">*</span></li>
-            <li>Poznámka</li>
-        </ul>
-        {% for f in formset %}
+        <div id="order-fish-form">
+            <ul>
+                <li>Druh ryby<span class="required">*</span></li>
+                <li>Počet kusů<span class="required">*</span></li>
+                <li>Živá nebo zpracovaná ryba<span class="required">*</span></li>
+                <li>Poznámka</li>
+            </ul>
+            {% for f in formset %}
             <ul>{{ f.as_ul }}</ul>
-        {% endfor %}
-    </div>
-    
+            {% endfor %}
+        </div>
 
-    <div id="empty-order-fish-form">
-        <ul>
-            {{  formset.empty_form.as_ul }}
-        </ul>
-    </div>
+        <div id="empty-order-fish-form">
+            <ul>
+                {{ formset.empty_form.as_ul }}
+            </ul>
+        </div>
 
-    <div id="add-button"><button type="button">přidat ryby</button></div>
-    
-    
+        <div id="add-button">
+            <button type="button">Přidat ryby</button>
+        </div>
 
-
-    <div id="submit-button"><p>
-                  <label for="{{ form.voucher.id_for_label }}">Mám slevový kód:</label>
-                {{ form.voucher }}</p>
-<p>
-    <input type="submit" value="vytvořit předobjednávku" /></p>
-        <p>Po dokončení předobjednávky Vám příjde potvrzující email.</p>
-    </div>
-
+        <div id="submit-button">
+            <p>
+                {% comment %}
+                <label for="{{ form.voucher.id_for_label }}">Mám slevový kód:</label>
+                {{ form.voucher }}
+                {% endcomment %}
+            </p>
+            <p>
+                <input type="submit" value="Vytvořit předobjednávku">
+            </p>
+            <p>Po dokončení předobjednávky Vám přijde potvrzující email.</p>
+        </div>
     </form>
 </div>
 {% endblock %}
-    
+
 {% block footer %}
 {% endblock %}
 
