@@ -246,12 +246,15 @@ class Order(models.Model):
     def __str__(self):
         return f'Objednávka č. {self.pk}, {self.full_name()} cena: {self.complete_price()}'
 
-    def complete_price(self):
+    def total_price(self):
         price = 0
         for p in self.order_fish.all():
             price = price + p.item_price()
 
-        return f'{price} kč'
+        return price
+
+    def complete_price(self):
+        return f'{self.total_price()} kč'
 
     complete_price.short_description="celková cena"
 
@@ -267,6 +270,24 @@ class Order(models.Model):
         self.status = 3
         self.save()
 
+
+    def send_sms_payment(self):
+        new_sms = SMSSender(
+            login=settings.SMS_SENDER_LOGIN,
+            secret_key=settings.SMS_SENDER_SECRET
+        )
+
+        new_sms.send_sms(self.phonenumber.as_e164, f"CHCIRYBU.CZ: Cena za vasi objednavku je {self.complete_price()}. Muzete zaplatit prevodem na ucet {settings.ACOUNT_NUMBER}. Prejeme prijemne svatky.")
+
+        self.status = 4
+        self.save()
+
+
+    def send_email_payment(self):
+        email_payment(self)
+
+        self.status = 4
+        self.save()
 
 
 class Finish(models.Model):
