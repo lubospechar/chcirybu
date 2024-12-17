@@ -61,6 +61,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'orders.context_processors.main_phone_contact',
             ],
         },
     },
@@ -128,4 +129,4 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 SMS_SENDER_LOGIN=config('SMS_SENDER_LOGIN')
 SMS_SENDER_SECRET=config('SMS_SENDER_SECRET')
 
-
+MAIN_PHONE_CONTACT = config('MAIN_PHONE_CONTACT', default='N/A')
