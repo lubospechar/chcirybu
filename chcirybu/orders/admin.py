@@ -1,6 +1,6 @@
 from django.contrib import admin
 from orders.models import (
-    Delivery, Order, Fish,  OrderFish, Finish, Voucher, DiscountPeriod
+    Delivery, Order, Fish,  OrderFish, Finish, Voucher, DiscountPeriod, ProcessedBy
 )
 from django.urls import path, reverse
 from django.utils.safestring import mark_safe
@@ -52,15 +52,22 @@ class OrderFishInline(admin.TabularInline):
     model = OrderFish
 
 
+@admin.register(ProcessedBy)
+class ProcessedByAdmin(admin.ModelAdmin):
+    list_display = ("processed_by",)  # Sloupce zobrazené v přehledu
+    search_fields = ("processed_by",)  # Pole pro vyhledávání
+    ordering = ("processed_by",)  # Výchozí řazení
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'full_name', 'id','email',
         'phonenumber', 'delivery',
-        'status', 'note', 'adress', 'complete_price', 'send_sms_button', 'payment_button',
+        'status', 'note', 'adress', 'complete_price', 'processed_by','send_sms_button', 'payment_button',
     )
 
-    list_filter = ('status', 'delivery',)
+    list_filter = ('status', 'delivery', 'processed_by')
     
     search_fields = (
         'surname', 'first_name', 'phonenumber', 'pk',

@@ -153,6 +153,22 @@ class Fish(models.Model):
         else: cons = ''
         return f'{self.fish} - {self.desc} ({self.store_info()}){cons}'
 
+
+class ProcessedBy(models.Model):
+    processed_by = models.CharField(max_length=30, verbose_name="Zpracování")
+
+    class Meta:
+        verbose_name = "Odpovědnost za zpracování"
+        verbose_name_plural = "Odpovědnost za zpracování"
+        ordering = ["processed_by"]
+
+    def __str__(self):
+        return self.processed_by
+
+
+
+
+
 class Order(models.Model):
     first_name = models.CharField(
         verbose_name='Jméno',
@@ -234,6 +250,8 @@ class Order(models.Model):
         help_text="Procento slevy, např. 10.50 pro 10.5% slevu",
         default=0
     )
+
+    processed_by = models.ForeignKey(ProcessedBy, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Zpracování")
 
     class Meta:
         verbose_name='Objednávka'
