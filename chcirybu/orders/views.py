@@ -9,6 +9,8 @@ from django.http import HttpResponse, Http404
 import datetime
 from django.conf import settings
 from orders.sms_sender import SMSSender
+from openpyxl import Workbook
+import pandas as pd
 
 
 class Home(View):
@@ -97,11 +99,11 @@ class Finish(View):
         if order.status == 1:
             raise Http404 # platnost stránky vypršela
 
-        print('mail')
+
+
         if order.email:
             email_recap(order)
 
-        print('sms')
         if order.phonenumber:
             new_sms = SMSSender(
                 login=settings.SMS_SENDER_LOGIN,
@@ -117,4 +119,45 @@ class Finish(View):
         return render(request, 'orders/finish.html', {'order': order})
 
 
+class ExcelExport(View):
+    def get(self, request, pk, *args, **kwargs):
+        # Získání konkrétního Delivery podle pk
+        delivery = get_object_or_404(Delivery, pk=pk)
+
+        # Filtrování OrderFish na základě Order s daným Delivery
+        fish_items = OrderFish.objects.filter(
+            order__in=Order.objects.filter(delivery=delivery)
+        ).select_related('order', 'fish', 'finish', 'order__processed_by',)
+
+        # Příprava dat pro export
+        data = []
+        for item in fish_items:
+            data.append({
+                "Číslo objednávky": item.order.pk,
+                "Jméno": item.order.first_name,
+                "Příjmení": item.order.surname,
+                "Email": item.order.email or "N/A",
+                "Telefon": str(item.order.phonenumber),
+                "Ryba": item.fish.fish,
+                "Popis ryby": item.fish.desc,
+                "Množství": item.amount,
+                "Zpracování": item.finish.procedure,
+                "Zpracovává": item.order.processed_by or 'N/A',
+                "Poznámka": item.desc or "N/A",
+            })
+
+        # Vytvoření pandas DataFrame
+        df = pd.DataFrame(data)
+
+        # Nastavení odpovědi pro stažení Excelového souboru
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = f'attachment; filename="orders_export_delivery_{pk}.xlsx"'
+
+        # Uložení DataFrame do Excelového souboru
+        with pd.ExcelWriter(response, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name="Export objednávek")
+
+        return response
 

@@ -39,9 +39,10 @@ def email_recap(order):
 def email_payment(order):
 
     complete_price = order.complete_price()
+    discount_price = order.complete_discount_price()
 
-    due = datetime.now() + timedelta(days=14)
-    generator = QRPlatbaGenerator(settings.ACCOUNT_NUMBER ,order.total_price() , x_vs=order.pk, message='Platba CHCIRYBU.CZ', due_date=due)
+    due = datetime(2025, 1, 2)
+    generator = QRPlatbaGenerator(settings.ACCOUNT_NUMBER ,round(order.complete_discount_price()) , x_vs=order.pk, message='Platba CHCIRYBU.CZ', due_date=due)
     img = generator.make_image()
     svg_data = img.to_string(encoding='unicode')
 
@@ -60,6 +61,23 @@ def email_payment(order):
         for f in order.order_fish.all()
     ))
 
+
+    if order.discount_percentage > 0:
+        total_price = format_html(
+            '''
+                <p><strong>Cena celkem:</strong> {complete_price}</p>
+                <p><strong>Sleva: </strong> {discount} % </p>
+                <p><strong>Cena po slevně:</strong> {discount_price} Kč</p>
+            ''',
+            complete_price=complete_price,
+            discount=order.discount_percentage,
+            discount_price=order.complete_discount_price()
+        )
+    else:
+        total_price = format_html(
+            f'<p><strong>Cena celkem:</strong> {complete_price}</p>'
+        )
+
     # HTML tělo e-mailu
     html_body = format_html(
         '''
@@ -76,7 +94,7 @@ def email_payment(order):
             {items}
         </ul>
 
-        <p><strong>Cena celkem:</strong> {complete_price} Kč</p>
+        {total_price}
 
         <p>Prosíme o úhradu na účet: <strong>{acount}</strong><br>
         Variabilní symbol: <strong>{order_pk}</strong></p>
@@ -96,7 +114,8 @@ def email_payment(order):
         complete_price=complete_price,
         order_pk=order.pk,
         main_phone=settings.MAIN_PHONE_CONTACT,
-        acount=settings.ACCOUNT_NUMBER
+        acount=settings.ACCOUNT_NUMBER,
+        total_price=total_price
     )
 
 

@@ -4,6 +4,7 @@ from orders.models import (
 )
 from django.urls import path, reverse
 from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 
 from django.shortcuts import redirect
 from django.db.models.functions import Concat
@@ -40,8 +41,16 @@ class DiscountPeriodAdmin(admin.ModelAdmin):
 
 @admin.register(Delivery)
 class DelivaryAdmin(admin.ModelAdmin):
-    list_display = ('delivery', 'day', 'part', 'ordering', 'alive_fish')
+    list_display = ('delivery', 'day', 'part', 'ordering', 'alive_fish', 'export_button',)
     list_editable = ('ordering', )
+
+    def export_button(self, obj):
+        return format_html(
+            '<a class="button" href="{}" target="_blank">Exportovat XLSX</a>',
+            reverse('export_delivery', args=[obj.pk])
+        )
+    export_button.short_description = "Export"
+    export_button.allow_tags = True
 
 @admin.register(Fish)
 class FishAdmin(admin.ModelAdmin):
@@ -64,7 +73,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'full_name', 'id','email',
         'phonenumber', 'delivery',
-        'status', 'note', 'adress', 'complete_price', 'processed_by','send_sms_button', 'payment_button',
+        'status', 'note', 'adress', 'complete_price', 'discount_percentage', 'complete_discount_price', 'processed_by','send_sms_button', 'payment_button',
     )
 
     list_filter = ('status', 'delivery', 'processed_by')

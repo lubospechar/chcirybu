@@ -7,6 +7,8 @@ from orders.sms_sender import SMSSender
 from orders.email import email_payment
 from django.utils.timezone import now
 
+from decimal import Decimal
+
 class DiscountPeriod(models.Model):
     name = models.CharField(max_length=100, help_text="Název slevy, např. 'Letní akce'")
     description = models.TextField(blank=True, help_text="Popis slevy nebo podmínky")
@@ -248,7 +250,8 @@ class Order(models.Model):
         max_digits=5,
         decimal_places=2,
         help_text="Procento slevy, např. 10.50 pro 10.5% slevu",
-        default=0
+        default=0,
+        verbose_name="Sleva"
     )
 
     processed_by = models.ForeignKey(ProcessedBy, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Zpracování")
@@ -277,6 +280,13 @@ class Order(models.Model):
     complete_price.short_description="celková cena"
 
 
+    def complete_discount_price(self):
+        total_price = Decimal(self.total_price())  # Převod na Decimal
+        return int(round(total_price - (total_price / Decimal(100) * self.discount_percentage)))
+
+
+    complete_discount_price.short_description = "cena po slevě"
+
     def send_sms_info(self):
         new_sms = SMSSender(
             login=settings.SMS_SENDER_LOGIN,
@@ -295,7 +305,7 @@ class Order(models.Model):
             secret_key=settings.SMS_SENDER_SECRET
         )
 
-        new_sms.send_sms(self.phonenumber.as_e164, f"CHCIRYBU.CZ: Cena za vasi objednavku je {self.complete_price()}. Muzete zaplatit prevodem na ucet {settings.ACCOUNT_NUMBER}. Prejeme prijemne svatky.")
+        new_sms.send_sms(self.phonenumber.as_e164, f"CHCIRYBU.CZ: Cena za vasi objednavku je {self.complete_discount_price()}. Muzete zaplatit prevodem na ucet {settings.ACCOUNT_NUMBER}. Prejeme prijemne svatky.")
 
         self.status = 4
         self.save()
