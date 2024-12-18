@@ -6,6 +6,8 @@ from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 
 from django.shortcuts import redirect
+from django.db.models.functions import Concat
+from django.db.models import Value, F, CharField
 
 
 @admin.register(DiscountPeriod)
@@ -53,18 +55,17 @@ class OrderFishInline(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
-        'surname', 'first_name','email',
+        'full_name', 'id','email',
         'phonenumber', 'delivery',
-        'status', 'note', 'adress', 'complete_price', 'commercial', 'send_sms_button', 'payment_button',
+        'status', 'note', 'adress', 'complete_price', 'send_sms_button', 'payment_button',
     )
 
     list_filter = ('status', 'delivery',)
     
     search_fields = (
-        'surname', 'phonenumber',
+        'surname', 'first_name', 'phonenumber', 'pk',
     )
-    
-    
+
     inlines = [OrderFishInline, ]
 
     def send_sms_button(self, obj):
@@ -121,6 +122,16 @@ class OrderAdmin(admin.ModelAdmin):
 
     actions = [send_info_sms_action]
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.annotate(
+            _full_name=Concat(F('first_name'), Value(' '), F('surname'), output_field=CharField())
+        )
+
+    def full_name(self, obj):
+        return obj._full_name
+    full_name.admin_order_field = '_full_name'  # Umožní třídění podle anotace
+    full_name.short_description = "Jméno"
 
 
 @admin.register(OrderFish)

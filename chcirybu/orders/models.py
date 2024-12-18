@@ -298,7 +298,17 @@ class Order(models.Model):
             self.send_email_payment()
 
 
+    def pk_to_obj(self):
+        return self.pk
 
+    pk_to_obj.short_description = "Obj"
+
+    #
+    # def full_name(self):
+    #     return f'{self.first_name} {self.surname}'
+    #
+    #
+    # full_name.short_description = "Jméno"
 
 class Finish(models.Model):
     procedure = models.CharField(
