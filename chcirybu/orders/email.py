@@ -52,11 +52,11 @@ def email_payment(order):
 
     # Vygenerování HTML seznamu objednávek
     items = mark_safe(''.join(
-        f'<li><strong>Druh:</strong> {f.fish.fish} {f.fish.desc}, '
+        f'<li><strong>Druh:</strong> {f.fish.fish} {f.fish.desc} ({f.fish.price} Kč / kg) '
         f'<strong>Počet:</strong> {f.amount} ks, '
         f'<strong>Zpracování:</strong> {f.finish}, '
         f'<strong>Váha:</strong> {f.weight} kg, '
-        f'<strong>Cena za položku:</strong> {f.item_price()} Kč</li>'
+        f'<strong>Cena:</strong> {f.item_price()} Kč</li>'
         for f in order.order_fish.all()
     ))
 
