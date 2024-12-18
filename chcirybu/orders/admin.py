@@ -55,10 +55,10 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'surname', 'first_name','email',
         'phonenumber', 'delivery',
-        'status', 'note', 'adress', 'complete_price', 'commercial', 'view_on_site',
+        'status', 'note', 'adress', 'complete_price', 'commercial', 'send_sms_button', 'payment_button',
     )
 
-    list_filter = ('status', 'commercial',)
+    list_filter = ('status', 'delivery',)
     
     search_fields = (
         'surname', 'phonenumber',
@@ -67,11 +67,17 @@ class OrderAdmin(admin.ModelAdmin):
     
     inlines = [OrderFishInline, ]
 
-    def view_on_site(self, obj):
+    def send_sms_button(self, obj):
         url = reverse('admin:send_info_sms_for_order', args=[obj.pk])
-        return mark_safe(f"<a href='{url}' class='button'>Odeslat</a>")
+        return mark_safe(f"<a href='{url}' class='button'>Připraveno</a>")
 
-    view_on_site.short_description = "INFO SMS"
+    send_sms_button.short_description = "INFO SMS"
+
+    def payment_button(self, obj):
+        url = reverse('admin:send_payment_for_order', args=[obj.pk])
+        return mark_safe(f"<a href='{url}' class='button'>Platba</a>")
+
+    payment_button.short_description = "PLATBA"
 
     def get_urls(self):
         urls = super().get_urls()
@@ -81,6 +87,11 @@ class OrderAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.send_info_sms),
                 name='send_info_sms_for_order',
             ),
+            path(
+                '<int:pk>/send_payment/',
+                self.admin_site.admin_view(self.send_payment),
+                name='send_payment_for_order',
+            ),
         ]
         return custom_urls + urls
 
@@ -88,6 +99,15 @@ class OrderAdmin(admin.ModelAdmin):
         obj = self.get_object(request, pk)
         if obj:
             result = obj.send_sms_info()  # Předpokládám, že tato metoda je v modelu
+            self.message_user(request, result)
+        else:
+            self.message_user(request, "Objekt nenalezen.", level=messages.ERROR)
+        return redirect('../')
+
+    def send_payment(self, request, pk):
+        obj = self.get_object(request, pk)
+        if obj:
+            result = obj.send_payment_email_sms()
             self.message_user(request, result)
         else:
             self.message_user(request, "Objekt nenalezen.", level=messages.ERROR)

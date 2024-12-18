@@ -277,7 +277,7 @@ class Order(models.Model):
             secret_key=settings.SMS_SENDER_SECRET
         )
 
-        new_sms.send_sms(self.phonenumber.as_e164, f"CHCIRYBU.CZ: Cena za vasi objednavku je {self.complete_price()}. Muzete zaplatit prevodem na ucet {settings.ACOUNT_NUMBER}. Prejeme prijemne svatky.")
+        new_sms.send_sms(self.phonenumber.as_e164, f"CHCIRYBU.CZ: Cena za vasi objednavku je {self.complete_price()}. Muzete zaplatit prevodem na ucet {settings.ACCOUNT_NUMBER}. Prejeme prijemne svatky.")
 
         self.status = 4
         self.save()
@@ -288,6 +288,16 @@ class Order(models.Model):
 
         self.status = 4
         self.save()
+
+
+    def send_payment_email_sms(self):
+        if self.phonenumber:
+            self.send_sms_payment()
+
+        if self.email:
+            self.send_email_payment()
+
+
 
 
 class Finish(models.Model):

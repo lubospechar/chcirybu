@@ -93,6 +93,7 @@ class Finish(View):
     def get(self, request, order_pk):
         order = get_object_or_404(Order, pk=order_pk)
 
+        #TODO platnost stránky časově.
         if order.status == 1:
             raise Http404 # platnost stránky vypršela
 

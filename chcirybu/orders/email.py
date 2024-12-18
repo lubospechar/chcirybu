@@ -110,7 +110,6 @@ def email_payment(order):
 
     email.content_subtype = 'html'  # Nastavení obsahu na HTML
 
-    # Přidání SVG jako přílohy
     email.attach('qr_platba.png', png_output.getvalue(), 'image/png')
 
     # Odeslání e-mailu
