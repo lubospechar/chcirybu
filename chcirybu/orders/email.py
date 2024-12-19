@@ -14,10 +14,6 @@ def email_recap(order):
     mail_body = mail_body + f'telefon: {order.phonenumber}\n'
     mail_body = mail_body + f'vyzvednutí: {order.delivery.delivery}, {order.delivery.day} - {order.delivery.part}\n\n\n'
     
-    if order.package:
-        mail_body = mail_body + 'Balíček Vám připravíme na stánku. Až bude připravený, zašleme Vám SMS.\n\n\n'
-    else:
-        mail_body = mail_body + 'Rybu budete mít připravenou živou na stánku, na počkání Vám ji zpracujeme.\n\n\n'
     
     for f in order.order_fish.all():
         mail_body = mail_body + f'Druh: {f.fish.fish} {f.fish.desc}, Počet: {f.amount} ks, Zpracování: {f.finish}\n'
