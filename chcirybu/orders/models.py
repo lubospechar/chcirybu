@@ -92,7 +92,7 @@ class Delivery(models.Model):
         verbose_name = "Možnost odebrat živou rybu"
     )
 
-    enable = models.BooleanField()
+    enable = models.BooleanField(default=True)
 
     class Meta:
         verbose_name="Místo a čas výdeje"
