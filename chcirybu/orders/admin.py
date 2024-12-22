@@ -41,8 +41,8 @@ class DiscountPeriodAdmin(admin.ModelAdmin):
 
 @admin.register(Delivery)
 class DelivaryAdmin(admin.ModelAdmin):
-    list_display = ('delivery', 'day', 'part', 'ordering', 'alive_fish', 'export_button',)
-    list_editable = ('ordering', )
+    list_display = ('delivery', 'day', 'part', 'ordering', 'alive_fish', 'export_button', 'enable')
+    list_editable = ('ordering', 'enable',)
 
     def export_button(self, obj):
         return format_html(
