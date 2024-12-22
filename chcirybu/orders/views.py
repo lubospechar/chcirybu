@@ -32,11 +32,13 @@ class Home(View):
 
     if datetime.datetime.now().hour < 18:
         delivery_queryset = Delivery.objects.filter(
-            day__gte=datetime.date.today()
+            day__gte=datetime.date.today(),
+            enable=True,
         )
     else:
         delivery_queryset = Delivery.objects.filter(
-            day__gt=datetime.date.today()
+            day__gt=datetime.date.today(),
+            enable=True,
         )
 
     form.base_fields['delivery'].queryset =  delivery_queryset
