@@ -144,6 +144,7 @@ class ExcelExport(View):
                 "Zpracování": item.finish.procedure,
                 "Zpracovává": item.order.processed_by or 'N/A',
                 "Poznámka": item.desc or "N/A",
+                "Adresa": item.order.adress,
             })
 
         # Vytvoření pandas DataFrame
